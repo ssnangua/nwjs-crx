@@ -75,7 +75,7 @@ function list() {
         if (fs.statSync(dir).isDirectory()) {
           const manifestFile = path.join(dir, "manifest.json");
           if (fs.existsSync(manifestFile)) {
-            const manifest = fs.readJsonSync(manifestFile);
+            const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
             return {
               name: manifest.name,
               version: manifest.version,
