@@ -2,7 +2,7 @@
   "name": "nwjs-crx",
   "description": "Install Chrome/Edge extension for NW.js.",
   "author": "ssnangua",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "main": "./index.js",
   "bin": "./cli.js",
@@ -15,8 +15,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "crx-util": "^1.0.0",
-    "fs-extra": "^11.1.1"
+    "crx-util": "^1.0.0"
   },
   "publishConfig": {
     "access": "public"

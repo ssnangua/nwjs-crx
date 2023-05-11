@@ -1,8 +1,7 @@
-const fs = require("fs-extra");
+const fs = require("fs");
 const path = require("path");
 const crx = require("crx-util");
 const extensionDir = path.join(__dirname, "extensions");
-const tmpDir = path.join(__dirname, "_tmp");
 
 /**
  * Download a extension from Chrome/Edge web store and adapt to NW.js
@@ -24,7 +23,7 @@ function install(urlOrId, source = "") {
 function installById(extensionId, source) {
   console.log(`Downloading extension from ${source} web store...`);
 
-  return crx.downloadById(extensionId, source, tmpDir).then((res) => {
+  return crx.downloadById(extensionId, source, extensionDir).then((res) => {
     if (res.result) {
       console.log(" - Downloaded!");
       const { output } = res;
@@ -45,19 +44,21 @@ function installById(extensionId, source) {
       console.log(" - Rename package.json");
       const pkgFile = path.join(output, "package.json");
       if (fs.existsSync(pkgFile)) {
-        fs.moveSync(pkgFile, path.join(output, "_package.json"));
+        fs.renameSync(pkgFile, path.join(output, "_package.json"));
       }
 
       const dirName = name.toLowerCase().replace(/ /g, "-");
-      const dest = path.join(extensionDir, dirName);
-      if (fs.existsSync(dest)) fs.removeSync(dest);
-      fs.moveSync(output, dest);
+      const dest = path.resolve(output, `../${dirName}`);
+      if (fs.existsSync(dest)) {
+        fs.rmSync(dest, { recursive: true, force: true });
+      }
+      fs.renameSync(output, dest);
 
       console.log(" - Extension successfully installed!");
       console.log(` - Path: "./node_modules/nwjs-crx/extensions/${dirName}"`);
     } else {
-      console.log(" - Install failed!");
-      return Promise.reject("Install failed:", res.error);
+      console.log(" - Install failed!", res.error);
+      return Promise.reject(res.error);
     }
   });
 }
